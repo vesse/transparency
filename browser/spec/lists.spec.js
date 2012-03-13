@@ -106,7 +106,7 @@
       doc.find('.comments').render(data);
       return expect(doc.html()).htmlToBeEqual(expected.html());
     });
-    return it("should match table rows to the number of model objects", function() {
+    it("should match table rows to the number of model objects", function() {
       var doc;
       doc = jQuery('<div>\
         <table>\
@@ -192,6 +192,31 @@
           </tbody>\
         </table>\
       </div').html());
+    });
+    return it("should duplicate element nodes when given a list also in browser", function() {
+      var data, doc, expected;
+      doc = jQuery('\
+      <div>\
+        <select class="cities">\
+          <option>city</option>\
+        </select>\
+      </div>\
+    ');
+      data = [
+        {
+          cities: ['Tampere', 'Helsinki']
+        }
+      ];
+      expected = jQuery('\
+      <div>\
+        <select class="cities">\
+          <option>Tampere</option>\
+          <option>Helsinki</option>\
+        </select>\
+      </div>\
+    ');
+      doc.render(data);
+      return expect(doc.html()).htmlToBeEqual(expected.html());
     });
   });
 

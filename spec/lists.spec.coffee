@@ -190,6 +190,32 @@ describe "Transparency", ->
         </table>
       </div').html())
 
+  it "should duplicate element nodes when given a list also in browser", ->
+    doc = jQuery '
+      <div>
+        <select class="cities">
+          <option>city</option>
+        </select>
+      </div>
+    '
+
+    data = [
+      cities: ['Tampere', 'Helsinki']
+    ]
+
+    expected = jQuery '
+      <div>
+        <select class="cities">
+          <option>Tampere</option>
+          <option>Helsinki</option>
+        </select>
+      </div>
+    '
+
+    doc.render data
+
+    expect(doc.html()).htmlToBeEqual(expected.html())
+
 expectModelObjects = (elements, data) ->
   for object, i in data
     expect(elements.get(i).transparency.model).toEqual(object)
