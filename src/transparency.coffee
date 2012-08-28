@@ -21,6 +21,8 @@
     $ = @jQuery
     register $
 
+  piecounter = 0
+
   expando = 'transparency'
   data    = (element) ->
     # Expanding DOM element with a JS object is generally unsafe.
@@ -226,12 +228,15 @@
   # jQuery.clone: https://github.com/jquery/jquery/blob/master/src/manipulation.js#L594
   # jQuery.support.html5Clone: https://github.com/jquery/jquery/blob/master/src/support.js#L83
   html5Clone = () -> document.createElement("nav").cloneNode(true).outerHTML != "<:nav></:nav>"
+  isIeCompatibilityMode = () -> window?.navigator?.appName == "Microsoft Internet Explorer" and document.documentMode < 9
   cloneNode  =
-    if not document? or html5Clone()
+    if (not document? or html5Clone()) and not isIeCompatibilityMode()
       (node) -> node.cloneNode true
     else
       (node) ->
         clone = $(node).clone()[0]
+        fixPieClones clone
+
         if clone.nodeType == ELEMENT_NODE
           clone.removeAttribute expando
           (element.removeAttribute expando) for element in clone.getElementsByTagName '*'
@@ -246,6 +251,17 @@
   isDomElement = (obj) -> obj?.nodeType == ELEMENT_NODE
 
   isPlainValue = (obj) -> isDate(obj) or typeof obj != 'object' and typeof obj != 'function'
+
+  fixPieClones = (obj) ->
+    pie_id = $(obj).attr '_pieId'
+    if pie_id
+      $(obj).attr '_pieId', pie_id + "_#{piecounter}"
+      piecounter++
+
+    $(obj).find('*[_pieId]').each (i, item) ->
+      desc_pie_id = $(item).attr '_pieId'
+      $(item).attr '_pieId', desc_pie_id + "_#{piecounter}"
+      piecounter++
 
   # Return module exports
   exports =
